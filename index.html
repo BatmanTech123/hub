@@ -440,7 +440,7 @@ function renderHome(main){
   nav.append(navRow("Due soon", due.length ? `${due.length} · next ${timeLeft(due[0].due).txt.toLowerCase()}` : "nothing this week", () => go("due")));
   const open = S.items.filter(i => i.status !== "done").length;
   nav.append(navRow("Lists", `${LISTS.length} lists · ${open} open`, () => go("lists")));
-  nav.append(navRow("Links", LINKS.slice(0,3).map(l => l.label.split(" ")[0]).join(", ") + "…", () => go("links")));
+  nav.append(navRow("Links", `${LINKS.length} links`, () => go("links")));
   box.append(nav); main.append(box);
 }
 

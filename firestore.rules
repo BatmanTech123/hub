@@ -1,0 +1,12 @@
+rules_version = '2';
+// Only your Google account can read or write anything.
+// Replace PASTE_YOUR_UID with the User ID shown in the hub's Settings screen after your first sign-in, then click Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == uid
+                         && uid == "PASTE_YOUR_UID";
+    }
+  }
+}

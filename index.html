@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14171a">
+<title>Matt's Hub</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+/* Layout: phone-first. Header, then Now / Due soon / Lists / Links, with the capture bar pinned to the bottom for the thumb. */
+:root{
+  --bg:#14171a; --panel:#1c2024; --panel2:#23282d; --ink:#eceae4; --ink2:#b7b9b6; --muted:#868b8f; --line:#2e3439;
+  --pencil:#f2c230; --pencil-ink:#1a1500; --pencil-soft:#3a3218; --late:#ef7f6c; --ok:#79c78f;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif; --mono:ui-monospace,"Roboto Mono",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root{
+  --bg:#f4f3ef; --panel:#ffffff; --panel2:#efeee9; --ink:#1b1d1f; --ink2:#4a4e52; --muted:#767a7e; --line:#dddcd5;
+  --pencil:#d9a400; --pencil-ink:#1a1500; --pencil-soft:#fbefc4; --late:#b8432f; --ok:#2f7a4f; color-scheme:light}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--sans);-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--pencil);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 104px)}
+header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+header h1{font-size:1.35rem;margin:0;letter-spacing:-.01em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .date{font:500 .78rem var(--mono);color:var(--muted)}
+.iconbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;flex:none}
+.iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.banner{background:var(--pencil-soft);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:.88rem;margin-bottom:12px}
+section{margin-bottom:18px}
+.label{font:600 .72rem var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.now{border:2px solid var(--pencil);padding:13px}
+.now .proj{font-weight:700;font-size:1.05rem}
+.now .next{color:var(--ink2);margin-top:4px}
+.now .meta{font:.75rem var(--mono);color:var(--muted);margin-top:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-size:.9rem}
+.btn.primary{background:var(--pencil);color:var(--pencil-ink);border-color:var(--pencil);font-weight:600}
+.btn.danger{color:var(--late)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left;min-height:72px;display:grid;align-content:space-between}
+.tile .n{font-weight:600}
+.tile .c{font:600 1.3rem var(--mono);font-variant-numeric:tabular-nums}
+.tile .c small{font:500 .7rem var(--mono);color:var(--muted);margin-left:4px}
+.links{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.links a{flex:none;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:.88rem;white-space:nowrap}
+.items{display:grid;gap:6px}
+.item{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 10px 6px;display:grid;grid-template-columns:44px 1fr 40px;gap:4px;align-items:start}
+.item.done .t{text-decoration:line-through;color:var(--muted)}
+.check{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;margin-top:-8px}
+.check span{width:22px;height:22px;border-radius:7px;border:2px solid var(--muted);display:grid;place-items:center}
+.item.done .check span{background:var(--ok);border-color:var(--ok)}
+.item.done .check span::after{content:"";width:9px;height:5px;border-left:2px solid var(--bg);border-bottom:2px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
+.t{overflow-wrap:anywhere}
+.im{font:.74rem var(--mono);color:var(--muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
+.im .late{color:var(--late)}
+.more{width:40px;height:40px;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1}
+.edit{grid-column:1/-1;display:grid;gap:8px;padding:8px 4px 2px}
+.edit input,.edit select,.edit textarea,.field{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:8px 10px}
+.empty{color:var(--muted);font-size:.92rem;padding:14px;border:1px dashed var(--line);border-radius:12px}
+.capture{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 10px)}
+.capture form{max-width:560px;margin:0 auto;display:flex;gap:8px}
+.capture input{flex:1;min-width:0;min-height:52px;border-radius:14px;border:1px solid var(--line);background:var(--panel);padding:0 14px;font-size:1rem}
+.capture button{width:56px;min-height:52px;border-radius:14px;border:0;background:var(--pencil);color:var(--pencil-ink);font-size:1.7rem;font-weight:700;line-height:1}
+.hint{max-width:560px;margin:6px auto 0;font:.72rem var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 112px);background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:.9rem;z-index:5;max-width:90vw}
+.signin{min-height:100vh;display:grid;place-items:center;padding:24px}
+.signin .card{max-width:360px;width:100%;display:grid;gap:14px;text-align:center;padding:28px 22px}
+.signin h1{margin:0;font-size:1.6rem}
+.kv{display:grid;gap:4px;font-size:.92rem}
+.kv code{font:.8rem var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;overflow-wrap:anywhere;user-select:all}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
+.tabs button{flex:none;min-height:36px;border-radius:999px;border:1px solid var(--line);background:var(--panel);padding:0 12px;font-size:.85rem}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){.tile,.btn,.item{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<div id="signinView" class="signin" hidden>
+  <div class="card">
+    <h1>Matt's Hub</h1>
+    <p style="margin:0;color:var(--ink2)">Ideas, lists and projects in one place.</p>
+    <button class="btn primary" id="signinBtn" style="min-height:48px">Sign in with Google</button>
+    <p id="signinMsg" style="margin:0;font-size:.85rem;color:var(--muted)"></p>
+  </div>
+</div>
+
+<div id="appView" hidden>
+  <div class="wrap">
+    <header>
+      <button class="iconbtn" id="backBtn" aria-label="Back" hidden><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1 id="title">Matt's Hub</h1>
+      <span class="date" id="today"></span>
+      <button class="iconbtn" id="searchBtn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      <button class="iconbtn" id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </header>
+    <div id="banner" class="banner" hidden></div>
+    <main id="main"></main>
+  </div>
+  <div class="capture">
+    <form id="captureForm" autocomplete="off">
+      <input id="captureInput" type="text" placeholder="Oh, I have an idea…" aria-label="Capture an idea or item" enterkeyhint="done">
+      <button type="submit" aria-label="Save">+</button>
+    </form>
+    <div class="hint" id="hint">#buy #read #vinyl #car #school · !fri !10/21 · @project</div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script type="module">
+import { FIREBASE_CONFIG, LINKS } from "./config.js";
+
+const LISTS = [
+  { k:"inbox", n:"Ideas Inbox", tags:["idea","inbox"] },
+  { k:"school", n:"School", tags:["school","class"] },
+  { k:"buy", n:"To Buy", tags:["buy"] },
+  { k:"reading", n:"Reading", tags:["read","reading","book"] },
+  { k:"vinyl", n:"Vinyl wants", tags:["vinyl","record"] },
+  { k:"car", n:"Car search", tags:["car"] },
+  { k:"projects", n:"Projects", tags:["proj","project"] }
+];
+const DEMO = !FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith("PASTE");
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+/* ---------- dates ---------- */
+const pad = n => String(n).padStart(2,"0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayISO = () => iso(new Date());
+function addDays(n){ const d = new Date(); d.setDate(d.getDate()+n); return iso(d); }
+function parseDue(tok){
+  const t = tok.toLowerCase(), now = new Date();
+  if (t === "today") return todayISO();
+  if (t === "tom" || t === "tomorrow") return addDays(1);
+  const days = ["sun","mon","tue","wed","thu","fri","sat"], i = days.indexOf(t.slice(0,3));
+  if (i >= 0 && /^[a-z]+$/.test(t)) { let diff = (i - now.getDay() + 7) % 7; if (diff === 0) diff = 7; return addDays(diff); }
+  let m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (m) return `${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
+  m = t.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+  if (m) {
+    let y = m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : now.getFullYear();
+    let d = `${y}-${pad(+m[1])}-${pad(+m[2])}`;
+    if (!m[3] && d < todayISO()) d = `${y+1}-${pad(+m[1])}-${pad(+m[2])}`;
+    return d;
+  }
+  return null;
+}
+function fmtDue(d){
+  if (!d) return "";
+  const t = todayISO(); if (d === t) return "today"; if (d === addDays(1)) return "tomorrow";
+  const [y,m,dd] = d.split("-").map(Number); const dt = new Date(y, m-1, dd);
+  return dt.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+}
+
+/* ---------- capture parsing ---------- */
+function parseCapture(raw){
+  const out = { list:"inbox", tags:[], due:null, project:null };
+  const words = raw.trim().split(/\s+/), keep = [];
+  for (const w of words) {
+    if (/^#\w+/.test(w)) {
+      const tag = w.slice(1).toLowerCase(); const L = LISTS.find(l => l.tags.includes(tag));
+      if (L) out.list = L.k; else out.tags.push(tag);
+      if (L && L.k === "inbox") out.tags.push("idea");
+    } else if (/^!\S+/.test(w) && parseDue(w.slice(1))) out.due = parseDue(w.slice(1));
+    else if (/^@\w+/.test(w)) out.project = w.slice(1).toLowerCase();
+    else keep.push(w);
+  }
+  out.text = keep.join(" ");
+  return out;
+}
+
+/* ---------- stores ---------- */
+function makeLocalStore(){
+  const KEY = "hub-demo-v1"; let state = { items:[], now:null };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) state = s; } catch(e) {}
+  const subs = [];
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} subs.forEach(f => f(state)); };
+  return {
+    uid: "demo",
+    subscribe(f){ subs.push(f); f(state); },
+    async add(it){ state.items.unshift({ id: crypto.randomUUID(), ...it }); save(); },
+    async update(id, p){ state.items = state.items.map(x => x.id === id ? { ...x, ...p } : x); save(); },
+    async remove(id){ state.items = state.items.filter(x => x.id !== id); save(); },
+    async setNow(n){ state.now = n; save(); }
+  };
+}
+async function makeFirebaseStore(){
+  const V = "10.12.2";
+  const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+  const A = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+  const F = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+  const app = initializeApp(FIREBASE_CONFIG);
+  const auth = A.getAuth(app);
+  const db = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) });
+  return { A, F, auth, db };
+}
+function firebaseStoreFor(fb, uid){
+  const { F, db } = fb; const items = F.collection(db, "users", uid, "items"); const nowRef = F.doc(db, "users", uid, "meta", "now");
+  let state = { items:[], now:null }; const subs = [];
+  const emit = () => subs.forEach(f => f(state));
+  const onErr = e => { if (e && e.code === "permission-denied") showSetup(uid); else toast("Sync problem: " + (e && e.message || "try again")); };
+  F.onSnapshot(F.query(items, F.orderBy("created","desc")), s => { state = { ...state, items: s.docs.map(d => ({ id:d.id, ...d.data() })) }; emit(); }, onErr);
+  F.onSnapshot(nowRef, s => { state = { ...state, now: s.exists() ? s.data() : null }; emit(); }, onErr);
+  return {
+    uid,
+    subscribe(f){ subs.push(f); f(state); },
+    add: it => F.addDoc(items, it).catch(onErr),
+    update: (id, p) => F.updateDoc(F.doc(items, id), p).catch(onErr),
+    remove: id => F.deleteDoc(F.doc(items, id)).catch(onErr),
+    setNow: n => F.setDoc(nowRef, n).catch(onErr)
+  };
+}
+
+/* ---------- ui state ---------- */
+let store = null, S = { items:[], now:null }, view = { name:"home" }, openEdit = null, confirmDel = null, setupUid = null;
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200); }
+function go(name, param, push = true){ view = { name, param }; openEdit = null; if (push) history.pushState(view, ""); render(); window.scrollTo(0,0); }
+window.addEventListener("popstate", e => { view = e.state || { name:"home" }; openEdit = null; render(); });
+$("backBtn").onclick = () => history.back();
+$("searchBtn").onclick = () => go("search", "");
+$("settingsBtn").onclick = () => go("settings");
+$("today").textContent = new Date().toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+
+$("captureForm").onsubmit = async e => {
+  e.preventDefault(); const raw = $("captureInput").value; if (!raw.trim() || !store) return;
+  const p = parseCapture(raw); if (!p.text) { toast("Add some words, not just tags"); return; }
+  if (view.name === "list" && p.list === "inbox" && !/#\w/.test(raw)) p.list = view.param;
+  await store.add({ text:p.text, list:p.list, tags:p.tags, due:p.due, project:p.project, status:"open", created:Date.now() });
+  $("captureInput").value = ""; toast("Saved to " + LISTS.find(l => l.k === p.list).n + (p.due ? " · due " + fmtDue(p.due) : ""));
+};
+
+function showSetup(uid){ setupUid = uid; if (view.name !== "settings") go("settings"); else render(); }
+
+/* ---------- renderers ---------- */
+function render(){
+  const main = $("main"); main.replaceChildren();
+  $("backBtn").hidden = view.name === "home";
+  $("title").textContent = view.name === "home" ? "Matt's Hub" : view.name === "list" ? LISTS.find(l => l.k === view.param).n : view.name === "search" ? "Search" : "Settings";
+  $("today").hidden = view.name !== "home";
+  if (view.name === "home") renderHome(main);
+  else if (view.name === "list") renderList(main, view.param);
+  else if (view.name === "search") renderSearch(main);
+  else renderSettings(main);
+}
+function section(label, right){ const s = el("section"); const h = el("div","label"); h.append(el("span",null,label)); if (right) h.append(right); s.append(h); return s; }
+
+function renderHome(main){
+  // Now card
+  const s1 = section("Now");
+  const c = el("div","card now");
+  if (editingNow) { c.append(nowForm()); }
+  else {
+    const n = S.now || {};
+    c.append(el("div","proj", n.project || "No active project"));
+    c.append(el("div","next", n.next ? "Next: " + n.next : "Set the one next action, under an hour."));
+    if (n.updated) c.append(el("div","meta","Updated " + new Date(n.updated).toLocaleDateString()));
+    const r = el("div","row"); r.style.marginTop = "10px";
+    const b = el("button","btn primary","Wrap up"); b.onclick = () => { editingNow = true; render(); }; r.append(b); c.append(r);
+  }
+  s1.append(c); main.append(s1);
+  // Due soon
+  const lim = addDays(7);
+  const due = S.items.filter(i => i.status !== "done" && i.due && i.due <= lim).sort((a,b) => a.due.localeCompare(b.due));
+  const s2 = section("Due soon"); const box = el("div","items");
+  if (!due.length) box.append(el("div","empty","Nothing due in the next 7 days. Add one with !fri or !10/21."));
+  due.slice(0,3).forEach(i => box.append(itemRow(i, true)));
+  if (due.length > 3) { const m = el("button","btn","+" + (due.length-3) + " more"); m.onclick = () => go("search","!due"); box.append(m); }
+  s2.append(box); main.append(s2);
+  // Lists
+  const s3 = section("Lists"); const tiles = el("div","tiles");
+  LISTS.forEach(L => {
+    const open = S.items.filter(i => i.list === L.k && i.status !== "done").length;
+    const t = el("button","tile"); t.append(el("span","n",L.n)); const cnt = el("span","c", String(open)); cnt.append(el("small",null,"open")); t.append(cnt);
+    t.onclick = () => go("list", L.k); tiles.append(t);
+  });
+  s3.append(tiles); main.append(s3);
+  // Links
+  const s4 = section("Quick links"); const lk = el("div","links");
+  LINKS.forEach(l => { const a = el("a",null,l.label); a.href = l.url; a.target = "_blank"; a.rel = "noopener"; lk.append(a); });
+  s4.append(lk); main.append(s4);
+}
+let editingNow = false;
+function nowForm(){
+  const f = el("form","edit"); f.style.padding = "0";
+  const p = el("input","field"); p.id = "nowProject"; p.placeholder = "Active project"; p.value = (S.now && S.now.project) || "";
+  const n = el("textarea","field"); n.id = "nowNext"; n.placeholder = "Where I left off and the next action (under 1 hour)"; n.rows = 3; n.value = (S.now && S.now.next) || "";
+  const r = el("div","row"); const sv = el("button","btn primary","Save"); sv.type = "submit"; const cx = el("button","btn","Cancel"); cx.type = "button";
+  cx.onclick = () => { editingNow = false; render(); }; r.append(sv, cx);
+  f.append(p, n, r);
+  f.onsubmit = async e => { e.preventDefault(); await store.setNow({ project:p.value.trim(), next:n.value.trim(), updated:Date.now() }); editingNow = false; toast("Wrapped up"); render(); };
+  return f;
+}
+
+function itemRow(i, showList){
+  const row = el("div","item" + (i.status === "done" ? " done" : ""));
+  const ck = el("button","check"); ck.setAttribute("aria-label", i.status === "done" ? "Mark not done" : "Mark done"); ck.append(el("span"));
+  ck.onclick = () => store.update(i.id, { status: i.status === "done" ? "open" : "done", doneAt: i.status === "done" ? null : Date.now() });
+  const body = el("div"); body.append(el("div","t", i.text));
+  const meta = el("div","im");
+  if (i.due) { const d = el("span", i.due < todayISO() && i.status !== "done" ? "late" : null, (i.due < todayISO() && i.status !== "done" ? "overdue · " : "due ") + fmtDue(i.due)); meta.append(d); }
+  if (showList) meta.append(el("span",null, LISTS.find(l => l.k === i.list)?.n || i.list));
+  if (i.project) meta.append(el("span",null,"@" + i.project));
+  (i.tags || []).filter(t => t !== "idea").forEach(t => meta.append(el("span",null,"#" + t)));
+  if (meta.childNodes.length) body.append(meta);
+  const more = el("button","more","⋯"); more.setAttribute("aria-label","Edit"); more.onclick = () => { openEdit = openEdit === i.id ? null : i.id; confirmDel = null; render(); };
+  row.append(ck, body, more);
+  if (openEdit === i.id) row.append(editPanel(i));
+  return row;
+}
+function editPanel(i){
+  const f = el("form","edit");
+  const t = el("textarea"); t.rows = 2; t.value = i.text; t.id = "edit_text_" + i.id;
+  const sel = el("select"); sel.id = "edit_list_" + i.id; LISTS.forEach(L => { const o = el("option",null,L.n); o.value = L.k; if (L.k === i.list) o.selected = true; sel.append(o); });
+  const d = el("input"); d.type = "date"; d.value = i.due || ""; d.id = "edit_due_" + i.id;
+  const r = el("div","row"); const sv = el("button","btn primary","Save"); sv.type = "submit";
+  const del = el("button","btn danger", confirmDel === i.id ? "Tap again to delete" : "Delete"); del.type = "button";
+  del.onclick = async () => { if (confirmDel === i.id) { await store.remove(i.id); openEdit = null; confirmDel = null; toast("Deleted"); render(); } else { confirmDel = i.id; render(); } };
+  r.append(sv, del); f.append(t, sel, d, r);
+  f.onsubmit = async e => { e.preventDefault(); await store.update(i.id, { text:t.value.trim() || i.text, list:sel.value, due:d.value || null }); openEdit = null; toast("Saved"); render(); };
+  return f;
+}
+let listFilter = "open";
+function renderList(main, k){
+  const tabs = el("div","tabs");
+  [["open","Open"],["done","Done"],["all","All"]].forEach(([v,n]) => { const b = el("button",null,n); b.setAttribute("aria-pressed", listFilter === v); b.onclick = () => { listFilter = v; render(); }; tabs.append(b); });
+  main.append(tabs);
+  let items = S.items.filter(i => i.list === k);
+  if (listFilter === "open") items = items.filter(i => i.status !== "done"); else if (listFilter === "done") items = items.filter(i => i.status === "done");
+  items.sort((a,b) => (a.due || "9999").localeCompare(b.due || "9999") || b.created - a.created);
+  const box = el("div","items");
+  if (!items.length) box.append(el("div","empty", k === "inbox" ? "Inbox is empty. Type an idea below; it waits here until the monthly review." : "Nothing here yet. Type below to add to this list."));
+  items.forEach(i => box.append(itemRow(i, false)));
+  main.append(box);
+}
+let searchQ = "";
+function renderSearch(main){
+  const q = el("input","field"); q.type = "search"; q.id = "searchInput"; q.placeholder = "Search everything"; q.value = view.param === "!due" ? "" : searchQ;
+  main.append(q); const box = el("div","items"); box.style.marginTop = "10px"; main.append(box);
+  const run = () => {
+    searchQ = q.value; box.replaceChildren();
+    let items = view.param === "!due" && !searchQ ? S.items.filter(i => i.due && i.status !== "done").sort((a,b) => a.due.localeCompare(b.due))
+      : S.items.filter(i => searchQ && (i.text + " " + (i.tags || []).join(" ") + " " + (i.project || "")).toLowerCase().includes(searchQ.toLowerCase()));
+    if (!items.length) box.append(el("div","empty", searchQ ? "No matches." : "Type to search ideas, lists, tags and projects."));
+    items.slice(0,100).forEach(i => box.append(itemRow(i, true)));
+  };
+  q.oninput = run; run(); if (view.param !== "!due") setTimeout(() => q.focus(), 50);
+}
+function renderSettings(main){
+  const c = el("div","card"); c.style.display = "grid"; c.style.gap = "14px";
+  if (setupUid) {
+    const b = el("div","banner"); b.textContent = "Almost done: your data is locked until you paste this User ID into your Firestore rules and click Publish (setup step 6)."; c.append(b);
+  }
+  const kv = el("div","kv"); kv.append(el("strong",null,"Your User ID")); kv.append(el("code",null, store ? store.uid : "—")); c.append(kv);
+  const total = S.items.length, open = S.items.filter(i => i.status !== "done").length;
+  c.append(el("div",null, `${total} items saved, ${open} open.${DEMO ? " Demo mode: data stays on this device." : ""}`));
+  const r = el("div","row");
+  const ex = el("button","btn","Export backup"); ex.onclick = exportBackup;
+  const imLbl = el("label","btn"); imLbl.style.display = "inline-flex"; imLbl.style.alignItems = "center"; imLbl.textContent = "Import file";
+  const im = el("input"); im.type = "file"; im.accept = "application/json"; im.hidden = true; im.id = "importFile"; im.onchange = e => importFile(e.target.files[0]); imLbl.append(im);
+  r.append(ex, imLbl);
+  if (!DEMO) { const so = el("button","btn danger","Sign out"); so.onclick = () => fb.A.signOut(fb.auth); r.append(so); }
+  c.append(r);
+  c.append(el("div",null,"Capture shortcuts: #buy #read #vinyl #car #school #idea send to a list. !today !tom !fri !10/21 set a due date. @thesis tags a project."));
+  main.append(c);
+}
+function exportBackup(){
+  const blob = new Blob([JSON.stringify({ exported:new Date().toISOString(), now:S.now, items:S.items }, null, 2)], { type:"application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `hub-backup-${todayISO()}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+async function importFile(file){
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text()); const seen = new Set(S.items.map(i => i.list + "|" + i.text)); let n = 0;
+    for (const it of (data.items || [])) {
+      if (!it.text || seen.has((it.list || "inbox") + "|" + it.text)) continue;
+      await store.add({ text:it.text, list:LISTS.some(l => l.k === it.list) ? it.list : "inbox", tags:it.tags || [], due:it.due || null, project:it.project || null, status:it.status === "done" ? "done" : "open", created:it.created || Date.now() }); n++;
+    }
+    if (data.now && !S.now) await store.setNow({ ...data.now, updated:Date.now() });
+    toast(`Imported ${n} items`);
+  } catch(e) { toast("That file is not a hub backup or starter file"); }
+}
+
+/* ---------- boot ---------- */
+let fb = null;
+function startApp(s){ store = s; $("signinView").hidden = true; $("appView").hidden = false; store.subscribe(st => { S = st; if (!openEdit && !editingNow && document.activeElement?.id !== "searchInput") render(); }); history.replaceState(view, ""); render(); }
+async function boot(){
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
+  if (DEMO) { $("banner").hidden = false; $("banner").textContent = "Demo mode: data stays on this device until you paste your Firebase config into config.js."; startApp(makeLocalStore()); return; }
+  try { fb = await makeFirebaseStore(); }
+  catch(e) { $("signinView").hidden = false; $("signinMsg").textContent = "Could not load Firebase. Check your connection and config.js."; return; }
+  fb.A.getRedirectResult(fb.auth).catch(() => {});
+  $("signinBtn").onclick = async () => {
+    const p = new fb.A.GoogleAuthProvider();
+    try { await fb.A.signInWithPopup(fb.auth, p); }
+    catch(e) { if (["auth/popup-blocked","auth/operation-not-supported-in-this-environment","auth/cancelled-popup-request"].includes(e.code)) fb.A.signInWithRedirect(fb.auth, p); else $("signinMsg").textContent = "Sign-in failed: " + (e.code || e.message); }
+  };
+  fb.A.onAuthStateChanged(fb.auth, u => {
+    if (u) startApp(firebaseStoreFor(fb, u.uid));
+    else { $("appView").hidden = true; $("signinView").hidden = false; }
+  });
+}
+boot();
+</script>
+</body>
+</html>

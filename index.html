@@ -3,115 +3,186 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#14171a">
+<meta name="theme-color" content="#1a1d20">
 <title>Matt's Hub</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: phone-first. Header, then Now / Due soon / Lists / Links, with the capture bar pinned to the bottom for the thumb. */
+/* ADHD-friendly theme: calm base, one loud signal (the accent), big targets, readable type.
+   1 One Thing home · 2 Visible time · 3 Instant wins · 4 If-then wrap-up · 5 Calm base, loud signal */
 :root{
-  --bg:#14171a; --panel:#1c2024; --panel2:#23282d; --ink:#eceae4; --ink2:#b7b9b6; --muted:#868b8f; --line:#2e3439;
-  --pencil:#f2c230; --pencil-ink:#1a1500; --pencil-soft:#3a3218; --late:#ef7f6c; --ok:#79c78f;
-  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif; --mono:ui-monospace,"Roboto Mono",Menlo,Consolas,monospace;
+  --bg:#1a1d20; --deep:#15181b; --panel:#23272b; --panel2:#2e3338; --sunk:#1d2024;
+  --ink:#e9e7e1; --ink2:#c9ccc9; --muted:#9aa0a4; --line:#30353a; --line2:#3a4046; --box:#4a5056;
+  --accent:#f2c230; --accent-ink:#1a1500; --done:#5f8f6e; --late:#e9a58e; --bar:#6d757c; --bar2:#8d959b; --track:#2c3136;
+  --sans:"Atkinson Hyperlegible Next","Segoe UI",system-ui,Roboto,sans-serif;
+  --mono:"Atkinson Hyperlegible Mono",ui-monospace,"Roboto Mono",monospace;
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){:root{
-  --bg:#f4f3ef; --panel:#ffffff; --panel2:#efeee9; --ink:#1b1d1f; --ink2:#4a4e52; --muted:#767a7e; --line:#dddcd5;
-  --pencil:#d9a400; --pencil-ink:#1a1500; --pencil-soft:#fbefc4; --late:#b8432f; --ok:#2f7a4f; color-scheme:light}}
+  --bg:#f3f2ee; --deep:#eceae5; --panel:#ffffff; --panel2:#ebeae5; --sunk:#f6f5f2;
+  --ink:#1b1d1f; --ink2:#44484c; --muted:#6b7075; --line:#dcdbd4; --line2:#c9c8c1; --box:#a9aca9;
+  --accent:#e0ad00; --accent-ink:#1a1500; --done:#3f7a52; --late:#b0452f; --bar:#8b9096; --bar2:#8b9096; --track:#e2e1dc; color-scheme:light}}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--sans);-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 var(--sans);-webkit-tap-highlight-color:transparent}
+body.focusing{background:var(--deep)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:2px solid var(--pencil);outline-offset:2px}
+a{color:var(--ink)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 [hidden]{display:none!important}
-.wrap{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 104px)}
-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-header h1{font-size:1.35rem;margin:0;letter-spacing:-.01em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-header .date{font:500 .78rem var(--mono);color:var(--muted)}
-.iconbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;flex:none}
-.iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.banner{background:var(--pencil-soft);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:.88rem;margin-bottom:12px}
-section{margin-bottom:18px}
-.label{font:600 .72rem var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
-.now{border:2px solid var(--pencil);padding:13px}
-.now .proj{font-weight:700;font-size:1.05rem}
-.now .next{color:var(--ink2);margin-top:4px}
-.now .meta{font:.75rem var(--mono);color:var(--muted);margin-top:8px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-size:.9rem}
-.btn.primary{background:var(--pencil);color:var(--pencil-ink);border-color:var(--pencil);font-weight:600}
+.mono{font-family:var(--mono)}
+.daybar{position:sticky;top:0;z-index:3;height:6px;background:var(--track)}
+.daybar div{height:100%;background:var(--bar)}
+.wrap{max-width:560px;margin:0 auto;padding:10px 20px calc(env(safe-area-inset-bottom,0px) + 110px)}
+.clock{display:flex;justify-content:space-between;font:13px var(--mono);color:var(--muted);padding-top:calc(env(safe-area-inset-top,0px))}
+header{display:flex;align-items:center;gap:10px;margin:14px 0 16px}
+header h1{font-size:22px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);display:grid;place-items:center;flex:none;color:var(--ink)}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.banner{background:var(--panel2);border-radius:12px;padding:10px 12px;font-size:15px;margin-bottom:14px;color:var(--ink2)}
+.label{font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+/* Now card: the one loud thing */
+.now{border:2px solid var(--accent);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px;background:var(--panel)}
+.now .big{font-size:25px;line-height:1.25;font-weight:700;overflow-wrap:anywhere}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:13px var(--mono);padding:4px 10px;border-radius:999px;background:var(--panel2);color:var(--ink2)}
+.ifthen{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;background:var(--sunk);color:var(--ink2);font-size:16px;line-height:1.4}
+.ifthen svg{margin-top:2px;color:var(--muted)}
+.leftoff{font-size:14px;color:var(--muted);line-height:1.4}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{min-height:50px;padding:0 18px;border-radius:14px;border:1px solid var(--line2);background:transparent;font-size:16px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border:0;font-weight:700;font-size:18px;min-height:54px}
+.btn.grow{flex:1}
 .btn.danger{color:var(--late)}
-.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left;min-height:72px;display:grid;align-content:space-between}
-.tile .n{font-weight:600}
-.tile .c{font:600 1.3rem var(--mono);font-variant-numeric:tabular-nums}
-.tile .c small{font:500 .7rem var(--mono);color:var(--muted);margin-left:4px}
-.links{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
-.links a{flex:none;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:.88rem;white-space:nowrap}
-.items{display:grid;gap:6px}
-.item{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 10px 6px;display:grid;grid-template-columns:44px 1fr 40px;gap:4px;align-items:start}
+.btn.small{min-height:40px;font-size:15px;padding:0 14px}
+.wins{display:flex;align-items:center;gap:10px;padding:0 4px;background:none;border:0;color:var(--ink2);font-size:16px;min-height:44px;text-align:left}
+.dots{display:flex;gap:6px}
+.dot{width:22px;height:22px;border-radius:7px;border:2px dashed var(--box)}
+.dot.on{background:var(--done);border:0;display:grid;place-items:center}
+.dot.on::after,.ck.on::after{content:"";width:9px;height:5px;border-left:2.6px solid var(--bg);border-bottom:2.6px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
+.navrow{text-decoration:none;display:flex;align-items:center;gap:12px;min-height:56px;padding:0 16px;border-radius:14px;background:var(--panel);border:1px solid var(--line);width:100%;text-align:left;color:var(--ink)}
+.navrow .n{flex:1;font-size:17px}
+.navrow .m{font:13px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%}
+.navrow svg{color:var(--muted)}
+/* due cards with shrinking time bars */
+.due{display:flex;flex-direction:column;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px 14px 8px}
+.due.first{border:2px solid var(--accent)}
+.due .top{display:flex;gap:6px;align-items:flex-start}
+.due .t{flex:1;font-size:18px;line-height:1.3;padding-top:9px;overflow-wrap:anywhere}
+.due.first .t{font-weight:600}
+.due .left{font:600 14px var(--mono);color:var(--ink2);white-space:nowrap;padding-top:11px;display:flex;align-items:center;gap:6px}
+.due.first .left{color:var(--accent)}
+.due.late .left{color:var(--late)}
+.due .bar,.due .sub{margin-left:52px}
+.bar{height:10px;border-radius:6px;background:var(--panel2);display:flex}
+.bar div{border-radius:6px;background:var(--bar2)}
+.due.first .bar div{background:var(--accent)}
+.due.late .bar{border:1px dashed var(--late)}
+.sub{font:13px var(--mono);color:var(--muted)}
+.later{display:flex;justify-content:space-between;gap:12px;font-size:16px;color:var(--ink2);padding:4px 0}
+.later span:last-child{font:14px var(--mono);white-space:nowrap}
+/* items */
+.items{display:grid;gap:8px}
+.item{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 8px 8px 4px;display:grid;grid-template-columns:48px 1fr 44px;gap:2px;align-items:start}
 .item.done .t{text-decoration:line-through;color:var(--muted)}
-.check{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;margin-top:-8px}
-.check span{width:22px;height:22px;border-radius:7px;border:2px solid var(--muted);display:grid;place-items:center}
-.item.done .check span{background:var(--ok);border-color:var(--ok)}
-.item.done .check span::after{content:"";width:9px;height:5px;border-left:2px solid var(--bg);border-bottom:2px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
-.t{overflow-wrap:anywhere}
-.im{font:.74rem var(--mono);color:var(--muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
+.check{width:48px;height:48px;border:0;background:none;display:grid;place-items:center;flex:none}
+.ck{width:24px;height:24px;border-radius:7px;border:2px solid var(--ink2);display:grid;place-items:center}
+.ck.on{background:var(--done);border-color:var(--done)}
+.item .t{overflow-wrap:anywhere;padding-top:11px}
+.im{font:13px var(--mono);color:var(--muted);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
 .im .late{color:var(--late)}
-.more{width:40px;height:40px;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1}
-.edit{grid-column:1/-1;display:grid;gap:8px;padding:8px 4px 2px}
-.edit input,.edit select,.edit textarea,.field{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:8px 10px}
-.empty{color:var(--muted);font-size:.92rem;padding:14px;border:1px dashed var(--line);border-radius:12px}
-.capture{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 10px)}
-.capture form{max-width:560px;margin:0 auto;display:flex;gap:8px}
-.capture input{flex:1;min-width:0;min-height:52px;border-radius:14px;border:1px solid var(--line);background:var(--panel);padding:0 14px;font-size:1rem}
-.capture button{width:56px;min-height:52px;border-radius:14px;border:0;background:var(--pencil);color:var(--pencil-ink);font-size:1.7rem;font-weight:700;line-height:1}
-.hint{max-width:560px;margin:6px auto 0;font:.72rem var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 112px);background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:.9rem;z-index:5;max-width:90vw}
+.more{width:44px;height:44px;border:0;background:none;color:var(--muted);font-size:22px;line-height:1}
+.edit{grid-column:1/-1;display:grid;gap:10px;padding:8px 6px 4px}
+.field,.edit input,.edit select,.edit textarea{width:100%;min-height:50px;border-radius:12px;border:1px solid var(--line2);background:var(--sunk);padding:10px 12px;font-size:16px;color:var(--ink)}
+textarea.field{resize:none;line-height:1.4}
+.empty{color:var(--muted);font-size:16px;padding:16px;border:1px dashed var(--line2);border-radius:14px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;min-height:80px;display:grid;align-content:space-between;color:var(--ink)}
+.tile .n{font-weight:600}
+.tile .c{font:600 22px var(--mono)}
+.tile .c small{font:13px var(--mono);color:var(--muted);margin-left:4px}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.tabs button,.pick{flex:none;min-height:40px;border-radius:999px;border:1px solid var(--line2);background:transparent;padding:0 14px;font-size:15px;color:var(--ink2)}
+.tabs button[aria-pressed="true"],.pick[aria-pressed="true"]{background:var(--panel2);border-color:var(--ink2);color:var(--ink)}
+/* focus */
+.focus{min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:26px;padding:calc(env(safe-area-inset-top,0px) + 48px) 28px calc(env(safe-area-inset-bottom,0px) + 32px);max-width:480px;margin:0 auto}
+.focus .task{font-size:24px;line-height:1.3;font-weight:700;text-align:center;overflow-wrap:anywhere}
+.ring{width:260px;height:260px;border-radius:50%;display:grid;place-items:center}
+.ring .in{width:220px;height:220px;border-radius:50%;background:var(--deep);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.ring .tm{font:600 52px var(--mono)}
+.focus .note{font-size:16px;color:var(--muted);text-align:center;line-height:1.4}
+.focus .acts{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:auto}
+/* win */
+.winhead{border-radius:20px;background:var(--panel);padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.bigcheck{width:72px;height:72px;border-radius:50%;background:var(--done);display:grid;place-items:center}
+.bigcheck::after{content:"";width:30px;height:15px;border-left:5px solid var(--bg);border-bottom:5px solid var(--bg);transform:rotate(-45deg) translate(2px,-3px)}
+.pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pills span{width:26px;height:8px;border-radius:4px;background:var(--done)}
+.step{display:flex;align-items:center;gap:6px;min-height:48px;width:100%;border:0;background:none;text-align:left;color:var(--ink2);font-size:16px;padding:0;border-radius:10px}
+.step.isdone{color:var(--muted)}
+.step.isdone .tx{text-decoration:line-through}
+.step.next{border:2px solid var(--accent);padding-right:10px;color:var(--ink);font-weight:600}
+.step .tx{flex:1}
+.step .tag{font:12px var(--mono);color:var(--accent)}
+.receipt{display:flex;justify-content:space-between;gap:12px;font-size:15px;color:var(--ink2);padding:3px 0}
+.receipt span:last-child{font:13px var(--mono);white-space:nowrap}
+/* wrap-up form */
+.lbl{font-size:15px;color:var(--ink2);display:block;margin-bottom:6px}
+.lbl.k{font:13px var(--mono);letter-spacing:.06em;color:var(--muted)}
+/* capture bar */
+.capture{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--track);padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 14px);z-index:4}
+.capture form{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.capture input{flex:1;min-width:0;min-height:54px;border-radius:14px;border:1px solid var(--line2);background:var(--panel);padding:0 16px;font-size:17px;color:var(--ink)}
+.capture button{width:58px;min-height:54px;border-radius:14px;border:0;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+.hint{max-width:560px;margin:6px auto 0;font:12px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 124px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:16px;z-index:6;max-width:90vw}
 .signin{min-height:100vh;display:grid;place-items:center;padding:24px}
 .signin .card{max-width:360px;width:100%;display:grid;gap:14px;text-align:center;padding:28px 22px}
-.signin h1{margin:0;font-size:1.6rem}
-.kv{display:grid;gap:4px;font-size:.92rem}
-.kv code{font:.8rem var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;overflow-wrap:anywhere;user-select:all}
-.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
-.tabs button{flex:none;min-height:36px;border-radius:999px;border:1px solid var(--line);background:var(--panel);padding:0 12px;font-size:.85rem}
-.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-@media (prefers-reduced-motion:no-preference){.tile,.btn,.item{transition:background .15s,border-color .15s}}
+.signin h1{margin:0;font-size:26px}
+.kv{display:grid;gap:4px;font-size:15px}
+.kv code{font:13px var(--mono);background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:8px;overflow-wrap:anywhere;user-select:all}
+@media (prefers-reduced-motion:no-preference){.btn,.item,.tile,.navrow{transition:background .15s,border-color .15s}}
 </style>
 </head>
 <body>
 <div id="signinView" class="signin" hidden>
   <div class="card">
     <h1>Matt's Hub</h1>
-    <p style="margin:0;color:var(--ink2)">Ideas, lists and projects in one place.</p>
-    <button class="btn primary" id="signinBtn" style="min-height:48px">Sign in with Google</button>
-    <p id="signinMsg" style="margin:0;font-size:.85rem;color:var(--muted)"></p>
+    <p style="margin:0;color:var(--ink2)">One next thing, everything else in its place.</p>
+    <button class="btn primary" id="signinBtn">Sign in with Google</button>
+    <p id="signinMsg" style="margin:0;font-size:14px;color:var(--muted)"></p>
   </div>
 </div>
 
 <div id="appView" hidden>
-  <div class="wrap">
+  <div class="daybar" id="daybar" aria-hidden="true"><div id="dayfill"></div></div>
+  <div class="wrap" id="wrap">
+    <div class="clock" id="clock"><span id="clockNow"></span><span id="clockLeft"></span></div>
     <header>
-      <button class="iconbtn" id="backBtn" aria-label="Back" hidden><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="iconbtn" id="backBtn" aria-label="Back" hidden><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
       <h1 id="title">Matt's Hub</h1>
-      <span class="date" id="today"></span>
-      <button class="iconbtn" id="searchBtn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
-      <button class="iconbtn" id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <button class="iconbtn" id="searchBtn" aria-label="Search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      <button class="iconbtn" id="settingsBtn" aria-label="Settings"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></button>
     </header>
     <div id="banner" class="banner" hidden></div>
     <main id="main"></main>
   </div>
-  <div class="capture">
+  <main id="focusMain" hidden></main>
+  <div class="capture" id="capture">
     <form id="captureForm" autocomplete="off">
       <input id="captureInput" type="text" placeholder="Oh, I have an idea…" aria-label="Capture an idea or item" enterkeyhint="done">
-      <button type="submit" aria-label="Save">+</button>
+      <button type="submit" aria-label="Save"><svg class="i" viewBox="0 0 24 24" style="width:24px;height:24px;stroke-width:2.6"><path d="M12 5v14M5 12h14"/></svg></button>
     </form>
-    <div class="hint" id="hint">#buy #read #vinyl #car #school · !fri !10/21 · @project</div>
+    <div class="hint">#buy #read #vinyl #car #school · !fri !10/21 · @project</div>
   </div>
 </div>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
 
 <script type="module">
 import { FIREBASE_CONFIG, LINKS } from "./config.js";
@@ -125,15 +196,22 @@ const LISTS = [
   { k:"car", n:"Car search", tags:["car"] },
   { k:"projects", n:"Projects", tags:["proj","project"] }
 ];
+const WHEN_CHIPS = ["I finish dinner", "I pour my Saturday coffee", "I sit down before class", "I start my lunch break"];
 const DEMO = !FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith("PASTE");
 const $ = id => document.getElementById(id);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const svg = (paths, extra = "") => { const s = document.createElementNS("http://www.w3.org/2000/svg","svg"); s.setAttribute("viewBox","0 0 24 24"); s.setAttribute("class","i"); s.setAttribute("aria-hidden","true"); if (extra) s.setAttribute("style", extra); s.innerHTML = paths; return s; };
+const ICON = { chev:'<path d="M9 6l6 6-6 6"/>', arrow:'<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>', timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/>', check:'<path d="M5 12l5 5 9-10"/>', alert:'<path d="M12 8v5"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/>' };
 
-/* ---------- dates ---------- */
+/* ---------- dates and time ---------- */
 const pad = n => String(n).padStart(2,"0");
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const todayISO = () => iso(new Date());
 function addDays(n){ const d = new Date(); d.setDate(d.getDate()+n); return iso(d); }
+const startOfToday = () => { const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); };
+const dateOf = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const dayDiff = s => Math.round((dateOf(s) - dateOf(todayISO())) / 864e5);
+const clockTime = t => new Date(t).toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" }).toLowerCase();
 function parseDue(tok){
   const t = tok.toLowerCase(), now = new Date();
   if (t === "today") return todayISO();
@@ -153,10 +231,18 @@ function parseDue(tok){
 }
 function fmtDue(d){
   if (!d) return "";
-  const t = todayISO(); if (d === t) return "today"; if (d === addDays(1)) return "tomorrow";
-  const [y,m,dd] = d.split("-").map(Number); const dt = new Date(y, m-1, dd);
-  return dt.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+  if (d === todayISO()) return "today"; if (d === addDays(1)) return "tomorrow";
+  return dateOf(d).toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
 }
+// Time left until the end of the due day, in words people can feel.
+function timeLeft(d){
+  const ms = dateOf(d).getTime() + 864e5 - Date.now();
+  if (ms <= 0) { const n = -dayDiff(d); return { late:true, txt: n <= 0 ? "Overdue" : `Overdue ${n} day${n > 1 ? "s" : ""}`, frac:0 }; }
+  const h = ms / 36e5, n = dayDiff(d);
+  const txt = n === 0 ? `${Math.max(1, Math.floor(h))} h left` : `${n} day${n > 1 ? "s" : ""} left`;
+  return { late:false, txt, frac: Math.min(1, ms / (7 * 864e5)) };
+}
+function inWords(d){ const n = dayDiff(d); if (n < 14) return `in ${n} days`; return `in ${Math.round(n/7)} weeks`; }
 
 /* ---------- capture parsing ---------- */
 function parseCapture(raw){
@@ -217,15 +303,54 @@ function firebaseStoreFor(fb, uid){
   };
 }
 
+/* ---------- now, wins and the focus timer ---------- */
+const NOW = () => S.now || {};
+const patchNow = p => store.setNow({ ...NOW(), ...p, updated: Date.now() });
+const pruneWins = w => (w || []).filter(x => x.at > Date.now() - 3 * 864e5);
+function currentStep(){ const st = NOW().steps || []; const i = st.findIndex(s => !s.done); return i < 0 ? null : { i, n: st.length, text: st[i].text }; }
+function currentText(){ const c = currentStep(); return c ? c.text : (NOW().next || ""); }
+function receipts(){
+  const t0 = startOfToday();
+  const a = S.items.filter(i => i.status === "done" && i.doneAt >= t0).map(i => ({ text:i.text, at:i.doneAt }));
+  const b = pruneWins(NOW().wins).filter(w => w.at >= t0).map(w => ({ text:w.text, at:w.at }));
+  return a.concat(b).sort((x,y) => y.at - x.at);
+}
+let timer = null;
+try { timer = JSON.parse(localStorage.getItem("hub-timer") || "null"); } catch(e) {}
+const saveTimer = () => { try { timer ? localStorage.setItem("hub-timer", JSON.stringify(timer)) : localStorage.removeItem("hub-timer"); } catch(e) {} };
+const tLeft = () => !timer ? 0 : timer.endAt ? Math.max(0, timer.endAt - Date.now()) : timer.left;
+const mmss = ms => { const s = Math.ceil(ms / 1000); return `${Math.floor(s/60)}:${pad(s % 60)}`; };
+function startTimer(mins){ timer = { label: currentText() || "Free focus", total: mins * 6e4, endAt: Date.now() + mins * 6e4, left: null, buzzed: false }; saveTimer(); go("focus"); }
+function togglePause(){ if (!timer) return; if (timer.endAt) { timer.left = tLeft(); timer.endAt = null; } else { timer.endAt = Date.now() + timer.left; timer.left = null; } saveTimer(); render(); }
+function addFive(){ if (!timer) return; const l = tLeft() + 5 * 6e4; timer.total = Math.max(timer.total, l); timer.endAt = Date.now() + l; timer.left = null; timer.buzzed = false; saveTimer(); render(); }
+
+async function completeCurrent(){
+  const n = NOW(), mins = timer ? Math.max(1, Math.round((timer.total - tLeft()) / 6e4)) : null;
+  const steps = (n.steps || []).map(s => ({ ...s })); const i = steps.findIndex(s => !s.done);
+  let text;
+  if (i >= 0) { text = steps[i].text; steps[i].done = true; steps[i].at = Date.now(); }
+  else text = n.next || (timer && timer.label) || "Focus session";
+  const snapshot = steps.slice();
+  const patch = { wins: pruneWins(n.wins).concat([{ text, at: Date.now(), mins }]), steps };
+  if (!steps.some(s => !s.done)) Object.assign(patch, { steps: [], next: "", when: "", will: "", mins: null, lastDone: text });
+  timer = null; saveTimer();
+  await patchNow(patch);
+  go("win", { text, mins, steps: snapshot, project: n.project || "" });
+}
+async function toggleItem(i){
+  const done = i.status !== "done";
+  await store.update(i.id, { status: done ? "done" : "open", doneAt: done ? Date.now() : null });
+  if (done) toast(`Done. ${receipts().length} today`);
+}
+
 /* ---------- ui state ---------- */
 let store = null, S = { items:[], now:null }, view = { name:"home" }, openEdit = null, confirmDel = null, setupUid = null;
-function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200); }
-function go(name, param, push = true){ view = { name, param }; openEdit = null; if (push) history.pushState(view, ""); render(); window.scrollTo(0,0); }
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2400); }
+function go(name, param, push = true){ $("toast").hidden = true; view = { name, param }; openEdit = null; if (push) history.pushState(view, ""); render(); window.scrollTo(0,0); }
 window.addEventListener("popstate", e => { view = e.state || { name:"home" }; openEdit = null; render(); });
 $("backBtn").onclick = () => history.back();
 $("searchBtn").onclick = () => go("search", "");
 $("settingsBtn").onclick = () => go("settings");
-$("today").textContent = new Date().toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
 
 $("captureForm").onsubmit = async e => {
   e.preventDefault(); const raw = $("captureInput").value; if (!raw.trim() || !store) return;
@@ -234,76 +359,241 @@ $("captureForm").onsubmit = async e => {
   await store.add({ text:p.text, list:p.list, tags:p.tags, due:p.due, project:p.project, status:"open", created:Date.now() });
   $("captureInput").value = ""; toast("Saved to " + LISTS.find(l => l.k === p.list).n + (p.due ? " · due " + fmtDue(p.due) : ""));
 };
-
 function showSetup(uid){ setupUid = uid; if (view.name !== "settings") go("settings"); else render(); }
+const busy = () => { const a = document.activeElement; return openEdit || view.name === "wrap" || (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName) && a.id !== "captureInput"); };
+
+/* ---------- clock: day bar, time left, focus ring ---------- */
+function tick(){
+  const now = new Date(), t0 = startOfToday();
+  const frac = Math.min(1, Math.max(0, (now - t0 - 6 * 36e5) / (18 * 36e5)));
+  $("dayfill").style.width = (frac * 100).toFixed(1) + "%";
+  $("daybar").setAttribute("aria-label", `${Math.round(frac * 100)} percent of the day gone`);
+  const left = t0 + 864e5 - now, h = Math.floor(left / 36e5), m = Math.floor(left % 36e5 / 6e4);
+  $("clockNow").textContent = now.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" }) + " · " + clockTime(now);
+  $("clockLeft").textContent = `${h ? h + " h " : ""}${m} min left today`;
+  if (timer) {
+    const l = tLeft();
+    const r = $("ringFill"), tm = $("ringTime"), hp = $("homeTimer");
+    if (r) r.style.background = `conic-gradient(var(--accent) 0deg ${(l / timer.total * 360).toFixed(1)}deg, var(--track) 0deg 360deg)`;
+    if (tm) tm.textContent = l ? mmss(l) : "0:00";
+    if (hp) hp.textContent = timer.endAt ? `${mmss(l)} left` : "Paused";
+    if (l === 0 && !timer.buzzed) {
+      timer.buzzed = true; saveTimer();
+      try { navigator.vibrate && navigator.vibrate([500, 250, 500, 250, 500]); } catch(e) {}
+      if (view.name === "focus") render();
+    }
+  }
+}
+setInterval(tick, 1000);
+setInterval(() => { if (!busy() && view.name !== "focus") render(); }, 60000);
 
 /* ---------- renderers ---------- */
+const TITLES = { due:"Due soon", lists:"Lists", links:"Links", search:"Search", settings:"Settings", wrap:"Wrap up", win:"Done" };
 function render(){
+  const focusing = view.name === "focus";
+  document.body.classList.toggle("focusing", focusing);
+  $("wrap").hidden = focusing; $("daybar").hidden = focusing; $("capture").hidden = focusing; $("focusMain").hidden = !focusing;
+  if (focusing) { renderFocus($("focusMain")); tick(); return; }
   const main = $("main"); main.replaceChildren();
   $("backBtn").hidden = view.name === "home";
-  $("title").textContent = view.name === "home" ? "Matt's Hub" : view.name === "list" ? LISTS.find(l => l.k === view.param).n : view.name === "search" ? "Search" : "Settings";
-  $("today").hidden = view.name !== "home";
-  if (view.name === "home") renderHome(main);
-  else if (view.name === "list") renderList(main, view.param);
-  else if (view.name === "search") renderSearch(main);
-  else renderSettings(main);
+  $("searchBtn").hidden = $("settingsBtn").hidden = view.name !== "home";
+  $("title").textContent = view.name === "home" ? "Matt's Hub" : view.name === "list" ? LISTS.find(l => l.k === view.param).n : TITLES[view.name];
+  ({ home:renderHome, due:renderDue, lists:renderLists, list:renderList, links:renderLinks, search:renderSearch, settings:renderSettings, wrap:renderWrap, win:renderWin })[view.name](main);
+  tick();
 }
-function section(label, right){ const s = el("section"); const h = el("div","label"); h.append(el("span",null,label)); if (right) h.append(right); s.append(h); return s; }
+const label = t => el("div","label",t);
+function navRow(name, meta, onclick){
+  const b = el("button","navrow"); b.append(el("span","n",name), el("span","m",meta), svg(ICON.chev)); b.onclick = onclick; return b;
+}
+function dueItems(){ return S.items.filter(i => i.status !== "done" && i.due && dayDiff(i.due) <= 7).sort((a,b) => a.due.localeCompare(b.due)); }
 
+/* 1 · One Thing home */
 function renderHome(main){
-  // Now card
-  const s1 = section("Now");
-  const c = el("div","card now");
-  if (editingNow) { c.append(nowForm()); }
-  else {
-    const n = S.now || {};
-    c.append(el("div","proj", n.project || "No active project"));
-    c.append(el("div","next", n.next ? "Next: " + n.next : "Set the one next action, under an hour."));
-    if (n.updated) c.append(el("div","meta","Updated " + new Date(n.updated).toLocaleDateString()));
-    const r = el("div","row"); r.style.marginTop = "10px";
-    const b = el("button","btn primary","Wrap up"); b.onclick = () => { editingNow = true; render(); }; r.append(b); c.append(r);
+  const box = el("div","stack");
+  const n = NOW(), c = el("section","now"), cur = currentStep(), text = currentText();
+  c.append(el("div","label", "Now" + (n.project ? " · " + n.project : "")));
+  if (text) {
+    c.append(el("div","big", text));
+    const chips = el("div","chips");
+    if (n.mins) chips.append(el("span","chip", `about ${n.mins} min`));
+    if (cur) chips.append(el("span","chip", `step ${cur.i + 1} of ${cur.n}`));
+    if (chips.childNodes.length) c.append(chips);
+    if (n.when) { const it = el("div","ifthen"); it.append(svg(ICON.arrow), el("div",null, `When ${n.when}, I will ${n.will || "start this"}.`)); c.append(it); }
+  } else {
+    c.append(el("div","big", n.lastDone ? "Last one done. What's next?" : "What's the one next thing?"));
+    c.append(el("div","leftoff","Tap Wrap up to set it. Keep it under an hour."));
   }
-  s1.append(c); main.append(s1);
-  // Due soon
-  const lim = addDays(7);
-  const due = S.items.filter(i => i.status !== "done" && i.due && i.due <= lim).sort((a,b) => a.due.localeCompare(b.due));
-  const s2 = section("Due soon"); const box = el("div","items");
-  if (!due.length) box.append(el("div","empty","Nothing due in the next 7 days. Add one with !fri or !10/21."));
-  due.slice(0,3).forEach(i => box.append(itemRow(i, true)));
-  if (due.length > 3) { const m = el("button","btn","+" + (due.length-3) + " more"); m.onclick = () => go("search","!due"); box.append(m); }
-  s2.append(box); main.append(s2);
-  // Lists
-  const s3 = section("Lists"); const tiles = el("div","tiles");
+  if (n.left) c.append(el("div","leftoff","Left off: " + n.left));
+  const r = el("div","row");
+  if (timer) { const b = el("button","btn primary grow"); b.append(svg(ICON.timer), el("span",null,"Focus · "), el("span","mono")); b.lastChild.id = "homeTimer"; b.onclick = () => go("focus"); r.append(b); }
+  else if (text) { const b = el("button","btn primary grow"); b.append(svg(ICON.timer, "stroke-width:2.4"), document.createTextNode("Start 25 min")); b.onclick = () => startTimer(25); r.append(b); }
+  const w = el("button","btn" + (text || timer ? "" : " primary grow"),"Wrap up"); w.onclick = () => go("wrap"); r.append(w);
+  c.append(r); box.append(c);
+  // Instant wins
+  const done = receipts().length, wins = el("button","wins"), dots = el("span","dots");
+  for (let k = 0; k < Math.min(8, Math.max(3, done + 1)); k++) dots.append(el("span", "dot" + (k < done ? " on" : "")));
+  wins.append(dots, el("span",null, done ? `${done} done today` : "Nothing done yet. One small thing counts."));
+  wins.onclick = () => go("win", null); box.append(wins);
+  // Collapsed rows
+  const nav = el("div","stack"); nav.style.gap = "8px";
+  const due = dueItems();
+  nav.append(navRow("Due soon", due.length ? `${due.length} · next ${timeLeft(due[0].due).txt.toLowerCase()}` : "nothing this week", () => go("due")));
+  const open = S.items.filter(i => i.status !== "done").length;
+  nav.append(navRow("Lists", `${LISTS.length} lists · ${open} open`, () => go("lists")));
+  nav.append(navRow("Links", LINKS.slice(0,3).map(l => l.label.split(" ")[0]).join(", ") + "…", () => go("links")));
+  box.append(nav); main.append(box);
+}
+
+/* 2 · Visible time */
+function renderDue(main){
+  main.append(el("p",null,"Bars shrink as time runs out. Full bar = 7 days."));
+  main.lastChild.style.cssText = "margin:0 0 14px;font-size:15px;color:var(--muted)";
+  const items = dueItems(), box = el("div","stack"); box.style.gap = "10px";
+  if (!items.length) box.append(el("div","empty","Nothing due in the next 7 days. Add one with !fri or !10/21."));
+  const firstOpen = items.findIndex(i => !timeLeft(i.due).late);
+  items.forEach((i, k) => {
+    const tl = timeLeft(i.due), card = el("div","due" + (tl.late ? " late" : k === firstOpen ? " first" : ""));
+    const top = el("div","top"), ck = el("button","check"); ck.setAttribute("aria-label","Mark done"); ck.append(el("span","ck")); ck.onclick = () => toggleItem(i);
+    const lt = el("span","left"); if (tl.late) lt.append(svg(ICON.alert, "width:16px;height:16px")); lt.append(document.createTextNode(tl.txt));
+    top.append(ck, el("span","t", i.text), lt);
+    const bar = el("div","bar"), fill = el("div"); fill.style.width = tl.late ? "0" : Math.max(3, tl.frac * 100) + "%"; bar.append(fill);
+    const sub = [tl.late ? "Was " + fmtDue(i.due) : fmtDue(i.due)]; const L = LISTS.find(l => l.k === i.list); if (L && L.k !== "inbox") sub.push(L.n); if (i.project) sub.push("@" + i.project);
+    card.append(top, bar, el("div","sub", sub.join(" · ")));
+    box.append(card);
+  });
+  main.append(box);
+  const later = S.items.filter(i => i.status !== "done" && i.due && dayDiff(i.due) > 7 && dayDiff(i.due) <= 31).sort((a,b) => a.due.localeCompare(b.due));
+  if (later.length) {
+    const s = el("div"); s.style.marginTop = "22px"; s.append(label("Later this month"));
+    later.forEach(i => { const r = el("div","later"); r.append(el("span",null,i.text), el("span",null,inWords(i.due))); s.append(r); });
+    main.append(s);
+  }
+}
+
+/* 2 · Focus timer */
+function renderFocus(main){
+  main.replaceChildren();
+  const f = el("div","focus"), l = tLeft(), up = timer && l === 0;
+  f.append(el("div","label", up ? "Time's up" : "Focus · only this"));
+  f.append(el("div","task", timer ? timer.label : "No timer running"));
+  const ring = el("div","ring"); ring.id = "ringFill"; ring.setAttribute("role","img"); ring.setAttribute("aria-label", "Focus timer");
+  const inn = el("div","in"), tm = el("div","tm", timer ? mmss(l) : "0:00"); tm.id = "ringTime";
+  inn.append(tm, el("div","sub", timer ? (timer.endAt ? `left of ${Math.round(timer.total / 6e4)} min` : "paused") : "")); ring.append(inn); f.append(ring);
+  const note = el("div","note"); note.append("Everything else is waiting in the hub.", el("br"), "Stray idea? Park it and keep going."); f.append(note);
+  const park = el("form"); park.hidden = true; park.style.cssText = "display:flex;gap:8px;width:100%";
+  const pi = el("input","field"); pi.placeholder = "Park an idea for later"; pi.id = "parkInput"; pi.setAttribute("aria-label","Park an idea");
+  const ps = el("button","btn small","Park"); ps.type = "submit"; park.append(pi, ps);
+  park.onsubmit = async e => { e.preventDefault(); const p = parseCapture(pi.value); if (!p.text) return; await store.add({ text:p.text, list:p.list, tags:p.tags, due:p.due, project:p.project, status:"open", created:Date.now() }); pi.value = ""; park.hidden = true; toast("Parked in " + LISTS.find(x => x.k === p.list).n); };
+  f.append(park);
+  const acts = el("div","acts");
+  if (timer) {
+    const d = el("button","btn primary"); d.append(svg(ICON.check, "stroke-width:2.6"), document.createTextNode("Done, mark it")); d.onclick = completeCurrent; acts.append(d);
+    const r = el("div","row"); r.style.flexWrap = "nowrap";
+    const a = el("button","btn grow", up ? "+5 min" : timer.endAt ? "Pause" : "Resume"); a.onclick = up ? addFive : togglePause;
+    const p = el("button","btn grow","Park idea"); p.onclick = () => { park.hidden = false; park.style.display = "flex"; pi.focus(); };
+    r.append(a, p); acts.append(r);
+    const stop = el("button","btn","Stop, not done"); stop.style.border = "0"; stop.style.color = "var(--muted)"; stop.onclick = () => { timer = null; saveTimer(); go("home"); }; acts.append(stop);
+  } else { const h = el("button","btn primary","Back to hub"); h.onclick = () => go("home"); acts.append(h); }
+  f.append(acts); main.append(f);
+}
+
+/* 3 · Instant win */
+function renderWin(main){
+  const p = view.param, list = receipts(), box = el("div","stack"); box.style.gap = "18px";
+  const head = el("div","winhead");
+  if (p) { head.append(el("div","bigcheck"), el("div",null,"Done.")); head.lastChild.style.cssText = "font-size:26px;font-weight:700";
+    head.append(el("div",null, p.text + (p.mins ? ` · ${p.mins} min` : ""))); head.lastChild.style.color = "var(--ink2)"; }
+  const pills = el("div","pills"); for (let k = 0; k < Math.min(list.length, 12); k++) pills.append(el("span")); if (list.length) head.append(pills);
+  head.append(el("div","mono", list.length ? `${list.length} done today` : "Nothing checked off yet today")); head.lastChild.style.cssText = "font-size:14px;color:var(--muted)";
+  box.append(head);
+  const steps = NOW().steps || [];
+  if (steps.length > 1) {
+    const s = el("div"); s.append(label("Big task, split into steps"));
+    const c = el("div","card"); c.style.cssText = "display:flex;flex-direction:column;gap:12px";
+    const nd = steps.filter(x => x.done).length, top = el("div"); top.style.cssText = "display:flex;justify-content:space-between;align-items:baseline;gap:10px";
+    top.append(el("span",null, NOW().project || "Steps"), el("span","mono", `${nd} of ${steps.length}`)); top.firstChild.style.cssText = "font-size:18px;font-weight:600"; top.lastChild.style.cssText = "font-size:14px;color:var(--ink2)";
+    const bar = el("div","bar"), fill = el("div"); fill.style.cssText = `width:${nd / steps.length * 100}%;background:var(--done)`; bar.append(fill);
+    c.append(top, bar);
+    const nextI = steps.findIndex(x => !x.done);
+    steps.forEach((x, k) => {
+      const b = el("button","step" + (x.done ? " isdone" : k === nextI ? " next" : "")); const ck = el("span","ck" + (x.done ? " on" : ""));
+      const w = el("span","check"); w.style.cssText = "width:44px;height:44px"; w.append(ck); b.append(w, el("span","tx", x.text));
+      if (k === nextI) b.append(el("span","tag","NEXT"));
+      b.setAttribute("aria-pressed", !!x.done);
+      b.onclick = () => { const st = steps.map((y, j) => j === k ? { ...y, done: !y.done, at: !y.done ? Date.now() : null } : y); patchNow({ steps: st }); };
+      c.append(b);
+    });
+    s.append(c); box.append(s);
+  }
+  if (list.length) {
+    const s = el("div"); s.append(label("Today's receipts"));
+    list.slice(0, 12).forEach(x => { const r = el("div","receipt"); r.append(el("span",null,x.text), el("span",null,clockTime(x.at))); s.append(r); });
+    box.append(s);
+  }
+  const r = el("div","row"); r.style.flexWrap = "nowrap";
+  if (currentText()) { const b = el("button","btn primary grow","Start next · 25 min"); b.onclick = () => startTimer(25); r.append(b); }
+  else { const b = el("button","btn primary grow","Set the next thing"); b.onclick = () => go("wrap"); r.append(b); }
+  const h = el("button","btn","Home"); h.onclick = () => go("home"); r.append(h);
+  box.append(r); main.append(box);
+}
+
+/* 4 · If-then wrap-up */
+function renderWrap(main){
+  const n = NOW(), f = el("form","stack"); f.style.gap = "16px";
+  const field = (id, lbl, tag, val, ph, cls = "lbl") => { const w = el("div"); const l = el("label",cls,lbl); l.htmlFor = id; const i = el(tag,"field"); i.id = id; i.value = val || ""; if (ph) i.placeholder = ph; if (tag === "textarea") i.rows = 2; w.append(l, i); return [w, i]; };
+  const [wp, ip] = field("wProject","Project","input", n.project, "Thesis Portfolio");
+  const [wl, il] = field("wLeft","Where I left off","textarea", n.left, "One line so future you can pick right back up");
+  const [wn, inx] = field("wNext","Next action, under 1 hour","input", n.next, "Buy FNILX with the $3K");
+  const stepsTxt = (n.steps || []).map(s => s.text).join("\n");
+  const [ws, is] = field("wSteps","Too big? One step per line (optional)","textarea", stepsTxt, "Create the project\nTurn on sign-in\n…"); is.rows = 3;
+  f.append(wp, wl, wn, ws);
+  // minutes
+  let mins = n.mins || null; const mw = el("div"); mw.append(el("span","lbl","About how long?"));
+  const mr = el("div","chips"); [10, 25, 45, 60].forEach(m => { const b = el("button","pick", m + " min"); b.type = "button"; b.setAttribute("aria-pressed", mins === m); b.onclick = () => { mins = mins === m ? null : m; [...mr.children].forEach(x => x.setAttribute("aria-pressed", x === b && mins === m)); }; mr.append(b); });
+  mw.append(mr); f.append(mw);
+  // if-then
+  const box = el("div","card"); box.style.cssText = "display:flex;flex-direction:column;gap:12px";
+  box.append(el("div",null,"Make it automatic: if this, then that")); box.firstChild.style.cssText = "font-size:17px;font-weight:600";
+  const [ww, iw] = field("wWhen","WHEN","input", n.when, "I pour my Saturday coffee", "lbl k");
+  const wc = el("div","chips"); wc.style.marginTop = "8px";
+  WHEN_CHIPS.forEach(t => { const b = el("button","pick", t); b.type = "button"; b.setAttribute("aria-pressed", (n.when || "").toLowerCase() === t.toLowerCase()); b.onclick = () => { iw.value = t; [...wc.children].forEach(x => x.setAttribute("aria-pressed", x === b)); }; wc.append(b); });
+  ww.append(wc);
+  const [wi, iwill] = field("wWill","I WILL","input", n.will, "open Fidelity and buy FNILX", "lbl k");
+  box.append(ww, wi, el("div",null,"This shows on the Now card until it's done.")); box.lastChild.style.cssText = "font-size:14px;color:var(--muted)";
+  f.append(box);
+  const sv = el("button","btn primary","Save wrap-up"); sv.type = "submit"; f.append(sv);
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const old = n.steps || [], lines = is.value.split("\n").map(s => s.trim()).filter(Boolean);
+    const steps = lines.map(t => { const o = old.find(s => s.text === t); return o ? o : { text:t, done:false }; });
+    await patchNow({ project: ip.value.trim(), left: il.value.trim(), next: inx.value.trim() || (lines[0] || ""), steps, mins, when: iw.value.trim(), will: iwill.value.trim() });
+    view = { name:"home" }; history.replaceState(view, ""); render(); toast("Wrapped up. Pick up right here next time.");
+  };
+  main.append(f);
+}
+
+/* lists, links, items */
+function renderLists(main){
+  const tiles = el("div","tiles");
   LISTS.forEach(L => {
     const open = S.items.filter(i => i.list === L.k && i.status !== "done").length;
     const t = el("button","tile"); t.append(el("span","n",L.n)); const cnt = el("span","c", String(open)); cnt.append(el("small",null,"open")); t.append(cnt);
     t.onclick = () => go("list", L.k); tiles.append(t);
   });
-  s3.append(tiles); main.append(s3);
-  // Links
-  const s4 = section("Quick links"); const lk = el("div","links");
-  LINKS.forEach(l => { const a = el("a",null,l.label); a.href = l.url; a.target = "_blank"; a.rel = "noopener"; lk.append(a); });
-  s4.append(lk); main.append(s4);
+  main.append(tiles);
 }
-let editingNow = false;
-function nowForm(){
-  const f = el("form","edit"); f.style.padding = "0";
-  const p = el("input","field"); p.id = "nowProject"; p.placeholder = "Active project"; p.value = (S.now && S.now.project) || "";
-  const n = el("textarea","field"); n.id = "nowNext"; n.placeholder = "Where I left off and the next action (under 1 hour)"; n.rows = 3; n.value = (S.now && S.now.next) || "";
-  const r = el("div","row"); const sv = el("button","btn primary","Save"); sv.type = "submit"; const cx = el("button","btn","Cancel"); cx.type = "button";
-  cx.onclick = () => { editingNow = false; render(); }; r.append(sv, cx);
-  f.append(p, n, r);
-  f.onsubmit = async e => { e.preventDefault(); await store.setNow({ project:p.value.trim(), next:n.value.trim(), updated:Date.now() }); editingNow = false; toast("Wrapped up"); render(); };
-  return f;
+function renderLinks(main){
+  const box = el("div","stack"); box.style.gap = "8px";
+  LINKS.forEach(l => { const a = el("a","navrow"); a.href = l.url; a.target = "_blank"; a.rel = "noopener"; a.append(el("span","n",l.label), svg(ICON.chev)); box.append(a); });
+  main.append(box);
 }
-
 function itemRow(i, showList){
   const row = el("div","item" + (i.status === "done" ? " done" : ""));
-  const ck = el("button","check"); ck.setAttribute("aria-label", i.status === "done" ? "Mark not done" : "Mark done"); ck.append(el("span"));
-  ck.onclick = () => store.update(i.id, { status: i.status === "done" ? "open" : "done", doneAt: i.status === "done" ? null : Date.now() });
+  const ck = el("button","check"); ck.setAttribute("aria-label", i.status === "done" ? "Mark not done" : "Mark done"); ck.append(el("span","ck" + (i.status === "done" ? " on" : "")));
+  ck.onclick = () => toggleItem(i);
   const body = el("div"); body.append(el("div","t", i.text));
   const meta = el("div","im");
-  if (i.due) { const d = el("span", i.due < todayISO() && i.status !== "done" ? "late" : null, (i.due < todayISO() && i.status !== "done" ? "overdue · " : "due ") + fmtDue(i.due)); meta.append(d); }
+  if (i.due) { const late = i.due < todayISO() && i.status !== "done"; meta.append(el("span", late ? "late" : null, (late ? "overdue · " : "due ") + fmtDue(i.due))); }
   if (showList) meta.append(el("span",null, LISTS.find(l => l.k === i.list)?.n || i.list));
   if (i.project) meta.append(el("span",null,"@" + i.project));
   (i.tags || []).filter(t => t !== "idea").forEach(t => meta.append(el("span",null,"#" + t)));
@@ -318,15 +608,17 @@ function editPanel(i){
   const t = el("textarea"); t.rows = 2; t.value = i.text; t.id = "edit_text_" + i.id;
   const sel = el("select"); sel.id = "edit_list_" + i.id; LISTS.forEach(L => { const o = el("option",null,L.n); o.value = L.k; if (L.k === i.list) o.selected = true; sel.append(o); });
   const d = el("input"); d.type = "date"; d.value = i.due || ""; d.id = "edit_due_" + i.id;
-  const r = el("div","row"); const sv = el("button","btn primary","Save"); sv.type = "submit";
-  const del = el("button","btn danger", confirmDel === i.id ? "Tap again to delete" : "Delete"); del.type = "button";
+  const r = el("div","row"); const sv = el("button","btn primary small","Save"); sv.type = "submit";
+  const nw = el("button","btn small","Make it Now"); nw.type = "button"; nw.onclick = async () => { await patchNow({ next: i.text, steps: [], when: "", will: "", mins: null }); openEdit = null; go("home"); };
+  const del = el("button","btn danger small", confirmDel === i.id ? "Tap again to delete" : "Delete"); del.type = "button";
   del.onclick = async () => { if (confirmDel === i.id) { await store.remove(i.id); openEdit = null; confirmDel = null; toast("Deleted"); render(); } else { confirmDel = i.id; render(); } };
-  r.append(sv, del); f.append(t, sel, d, r);
+  r.append(sv, nw, del); f.append(t, sel, d, r);
   f.onsubmit = async e => { e.preventDefault(); await store.update(i.id, { text:t.value.trim() || i.text, list:sel.value, due:d.value || null }); openEdit = null; toast("Saved"); render(); };
   return f;
 }
 let listFilter = "open";
 function renderList(main, k){
+  k = k || view.param;
   const tabs = el("div","tabs");
   [["open","Open"],["done","Done"],["all","All"]].forEach(([v,n]) => { const b = el("button",null,n); b.setAttribute("aria-pressed", listFilter === v); b.onclick = () => { listFilter = v; render(); }; tabs.append(b); });
   main.append(tabs);
@@ -340,33 +632,31 @@ function renderList(main, k){
 }
 let searchQ = "";
 function renderSearch(main){
-  const q = el("input","field"); q.type = "search"; q.id = "searchInput"; q.placeholder = "Search everything"; q.value = view.param === "!due" ? "" : searchQ;
-  main.append(q); const box = el("div","items"); box.style.marginTop = "10px"; main.append(box);
+  const q = el("input","field"); q.type = "search"; q.id = "searchInput"; q.placeholder = "Search everything"; q.value = searchQ; q.setAttribute("aria-label","Search");
+  main.append(q); const box = el("div","items"); box.style.marginTop = "12px"; main.append(box);
   const run = () => {
     searchQ = q.value; box.replaceChildren();
-    let items = view.param === "!due" && !searchQ ? S.items.filter(i => i.due && i.status !== "done").sort((a,b) => a.due.localeCompare(b.due))
-      : S.items.filter(i => searchQ && (i.text + " " + (i.tags || []).join(" ") + " " + (i.project || "")).toLowerCase().includes(searchQ.toLowerCase()));
+    const items = S.items.filter(i => searchQ && (i.text + " " + (i.tags || []).join(" ") + " " + (i.project || "")).toLowerCase().includes(searchQ.toLowerCase()));
     if (!items.length) box.append(el("div","empty", searchQ ? "No matches." : "Type to search ideas, lists, tags and projects."));
     items.slice(0,100).forEach(i => box.append(itemRow(i, true)));
   };
-  q.oninput = run; run(); if (view.param !== "!due") setTimeout(() => q.focus(), 50);
+  q.oninput = run; run(); setTimeout(() => q.focus(), 50);
 }
 function renderSettings(main){
   const c = el("div","card"); c.style.display = "grid"; c.style.gap = "14px";
-  if (setupUid) {
-    const b = el("div","banner"); b.textContent = "Almost done: your data is locked until you paste this User ID into your Firestore rules and click Publish (setup step 6)."; c.append(b);
-  }
-  const kv = el("div","kv"); kv.append(el("strong",null,"Your User ID")); kv.append(el("code",null, store ? store.uid : "—")); c.append(kv);
+  if (setupUid) { const b = el("div","banner"); b.textContent = "Almost done: your data is locked until you paste this User ID into your Firestore rules and click Publish (setup step 6)."; c.append(b); }
+  const kv = el("div","kv"); kv.append(el("strong",null,"Your User ID")); kv.append(el("code",null, store ? store.uid : "none")); c.append(kv);
   const total = S.items.length, open = S.items.filter(i => i.status !== "done").length;
   c.append(el("div",null, `${total} items saved, ${open} open.${DEMO ? " Demo mode: data stays on this device." : ""}`));
   const r = el("div","row");
-  const ex = el("button","btn","Export backup"); ex.onclick = exportBackup;
-  const imLbl = el("label","btn"); imLbl.style.display = "inline-flex"; imLbl.style.alignItems = "center"; imLbl.textContent = "Import file";
+  const ex = el("button","btn small","Export backup"); ex.onclick = exportBackup;
+  const imLbl = el("label","btn small"); imLbl.textContent = "Import file";
   const im = el("input"); im.type = "file"; im.accept = "application/json"; im.hidden = true; im.id = "importFile"; im.onchange = e => importFile(e.target.files[0]); imLbl.append(im);
   r.append(ex, imLbl);
-  if (!DEMO) { const so = el("button","btn danger","Sign out"); so.onclick = () => fb.A.signOut(fb.auth); r.append(so); }
+  if (!DEMO) { const so = el("button","btn danger small","Sign out"); so.onclick = () => fb.A.signOut(fb.auth); r.append(so); }
   c.append(r);
   c.append(el("div",null,"Capture shortcuts: #buy #read #vinyl #car #school #idea send to a list. !today !tom !fri !10/21 set a due date. @thesis tags a project."));
+  c.lastChild.style.cssText = "font-size:15px;color:var(--ink2)";
   main.append(c);
 }
 function exportBackup(){
@@ -388,7 +678,12 @@ async function importFile(file){
 
 /* ---------- boot ---------- */
 let fb = null;
-function startApp(s){ store = s; $("signinView").hidden = true; $("appView").hidden = false; store.subscribe(st => { S = st; if (!openEdit && !editingNow && document.activeElement?.id !== "searchInput") render(); }); history.replaceState(view, ""); render(); }
+function startApp(s){
+  store = s; $("signinView").hidden = true; $("appView").hidden = false;
+  if (timer) view = { name:"focus" };
+  store.subscribe(st => { S = st; if (!busy()) render(); });
+  history.replaceState(view, ""); render();
+}
 async function boot(){
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
   if (DEMO) { $("banner").hidden = false; $("banner").textContent = "Demo mode: data stays on this device until you paste your Firebase config into config.js."; startApp(makeLocalStore()); return; }
